@@ -5,12 +5,6 @@ interface Props {
   onSelect: (l: Licitacion) => void;
 }
 
-const estadoStyles: Record<string, string> = {
-  vigente: "bg-green-100 text-green-800",
-  proxima: "bg-blue-100 text-blue-800",
-  historica: "bg-gray-200 text-gray-700",
-};
-
 export default function LicitacionesTable({ data, onSelect }: Props) {
   return (
     <div className="overflow-x-auto rounded-md border mt-4">
@@ -44,14 +38,14 @@ export default function LicitacionesTable({ data, onSelect }: Props) {
               <td className="px-4 py-3 text-center">
                 {new Date(l.fechaApertura).toLocaleString("es-AR")}
               </td>
+
+              {/* Estado fijo */}
               <td className="px-4 py-3 text-center">
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-semibold
-                  ${estadoStyles[l.estado]}`}
-                >
-                  {l.estado.toUpperCase()}
+                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                  VIGENTE
                 </span>
               </td>
+
               <td className="px-4 py-3 text-center">
                 <button
                   onClick={() => onSelect(l)}

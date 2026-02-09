@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { licitaciones } from "@/data/licitaciones";
 import LicitacionesTabs from "@/components/licitaciones/LicitacionesTabs";
 import LicitacionesTable from "@/components/licitaciones/LicitacionesTable";
@@ -9,29 +9,73 @@ import BusquedaAvanzadaModal from "@/components/licitaciones/BusquedaAvanzadaMod
 import type { Licitacion } from "@/data/licitaciones";
 import Header from "@/components/layout/Header";
 
+type AdvancedFilters = {
+  texto: string;
+  tipo: string;
+  estado: string;
+  anio: string;
+};
+
 export default function LicitacionesPage() {
-  const [filter, setFilter] = useState("vigentes-proximas");
+  const [filter, setFilter] = useState<"todas" | "vigente">("todas");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Licitacion | null>(null);
   const [advancedOpen, setAdvancedOpen] = useState(false);
 
-  const filtered = licitaciones.filter((l) => {
-    const matchesFilter =
-      filter === "vigentes-proximas"
-        ? l.estado === "vigente" || l.estado === "proxima"
-        : l.estado === filter;
-
-    const matchesSearch =
-      l.objeto.toLowerCase().includes(search.toLowerCase()) ||
-      l.tipo.toLowerCase().includes(search.toLowerCase()) ||
-      l.numero.toString().includes(search);
-
-    return matchesFilter && matchesSearch;
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({
+    texto: "",
+    tipo: "",
+    estado: "",
+    anio: "",
   });
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+
+    return licitaciones.filter((l) => {
+      // Tabs
+      const matchesTab = filter === "todas" ? true : l.estado === "vigente";
+
+      // Buscador simple
+      const matchesSearch =
+        q === ""
+          ? true
+          : l.objeto.toLowerCase().includes(q) ||
+            l.tipo.toLowerCase().includes(q) ||
+            l.numero.toString().includes(q);
+
+      // Modal - tipo / rubro
+      const matchesTipo =
+        advancedFilters.tipo === ""
+          ? true
+          : l.tipo === advancedFilters.tipo;
+
+      // Modal - año (ESTO ES LO QUE FALTABA)
+      const matchesAnio =
+        advancedFilters.anio === ""
+          ? true
+          : String(l.anio) === advancedFilters.anio;
+
+      // Modal - texto
+      const matchesTexto =
+        advancedFilters.texto === ""
+          ? true
+          : l.objeto
+              .toLowerCase()
+              .includes(advancedFilters.texto.toLowerCase());
+
+      return (
+        matchesTab &&
+        matchesSearch &&
+        matchesTipo &&
+        matchesAnio &&
+        matchesTexto
+      );
+    });
+  }, [filter, search, advancedFilters]);
 
   return (
     <main className="min-h-screen bg-[color:var(--bg-page)]">
-
       <Header />
 
       {/* Franja institucional */}
@@ -43,9 +87,7 @@ export default function LicitacionesPage() {
         }}
       >
         <div className="max-w-7xl mx-auto px-6">
-          <h1 className="text-4xl font-semibold text-white">
-            Licitaciones
-          </h1>
+          <h1 className="text-4xl font-semibold text-white">Licitaciones</h1>
           <p className="text-white/90 mt-2">
             Consulta de pliegos y procesos de contratación
           </p>
@@ -55,11 +97,9 @@ export default function LicitacionesPage() {
       {/* Contenido */}
       <section className="max-w-7xl mx-auto px-6 py-10">
         <div className="bg-white rounded-lg shadow-sm border p-6">
-
-          {/* Tabs */}
           <LicitacionesTabs
             active={filter}
-            onChange={setFilter}
+            onChange={(v) => setFilter(v as "todas" | "vigente")}
             onAdvancedSearch={() => setAdvancedOpen(true)}
           />
 
@@ -75,31 +115,30 @@ export default function LicitacionesPage() {
             />
           </div>
 
-          {/* Tabla */}
           <LicitacionesTable
             data={filtered}
             onSelect={(l) => setSelected(l)}
           />
-
         </div>
       </section>
 
-      {/* Modal detalle */}
       <LicitacionModal
         licitacion={selected}
         onClose={() => setSelected(null)}
       />
 
-      {/* Modal búsqueda avanzada */}
       <BusquedaAvanzadaModal
         open={advancedOpen}
         onClose={() => setAdvancedOpen(false)}
         onApply={(filters) => {
-          setSearch(filters.texto || filters.tipo || "");
-          if (filters.estado) setFilter(filters.estado);
+          setAdvancedFilters(filters);
+
+          // opcional: reflejar texto en el input principal
+          if (filters.texto) setSearch(filters.texto);
+
+          setFilter("todas");
         }}
       />
-
     </main>
   );
 }

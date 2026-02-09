@@ -32,6 +32,16 @@ export default function BusquedaAvanzadaModal({
     onClose();
   };
 
+  const handleClear = () => {
+    onApply({
+      texto: "",
+      tipo: "",
+      estado: "",
+      anio: "",
+    });
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-xl overflow-hidden">
@@ -51,12 +61,6 @@ export default function BusquedaAvanzadaModal({
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4 text-sm">
 
-          <input
-            name="texto"
-            placeholder="Objeto de la licitación"
-            className="w-full px-3 py-2 border rounded-md"
-          />
-
           <select name="tipo" className="w-full px-3 py-2 border rounded-md">
             <option value="">Tipo de contratación</option>
             <option>Licitación Pública</option>
@@ -70,29 +74,45 @@ export default function BusquedaAvanzadaModal({
             <option value="historica">Histórica</option>
           </select>
 
-          <input
-            name="anio"
-            placeholder="Año"
-            className="w-full px-3 py-2 border rounded-md"
-          />
+          {/* Año como select */}
+          <select name="anio" className="w-full px-3 py-2 border rounded-md">
+            <option value="">Año</option>
+            <option value="2026">2026</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+          </select>
 
-          <div className="flex justify-end gap-3 pt-4 border-t">
+          <div className="flex justify-between items-center pt-4 border-t">
+
             <button
               type="button"
-              onClick={onClose}
-              className="px-4 py-2 border rounded-md"
+              onClick={handleClear}
+              className="px-4 py-2 rounded-md border border-gray-300
+             text-gray-700 text-sm font-medium
+             hover:bg-gray-100 transition"
             >
-              Cancelar
+              Limpiar filtros
             </button>
 
-            <button
-              type="submit"
-              className="px-4 py-2 rounded-md text-white
-                         bg-[color:var(--itu-blue)]
-                         hover:bg-[color:var(--itu-blue-dark)]"
-            >
-              Aplicar filtros
-            </button>
+
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 border rounded-md"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="submit"
+                className="px-4 py-2 rounded-md text-white
+                           bg-[color:var(--itu-blue)]
+                           hover:bg-[color:var(--itu-blue-dark)]"
+              >
+                Aplicar filtros
+              </button>
+            </div>
           </div>
         </form>
       </div>

@@ -7,10 +7,8 @@ interface Props {
 }
 
 const tabs = [
-  { id: "vigentes-proximas", label: "Vigentes y próximas" },
+  { id: "todas", label: "Todas" },
   { id: "vigente", label: "Vigentes" },
-  { id: "proxima", label: "Próximas" },
-  { id: "historica", label: "Históricas" },
 ];
 
 export default function LicitacionesTabs({
@@ -41,7 +39,7 @@ export default function LicitacionesTabs({
                    border border-gray-300 text-gray-700 hover:bg-gray-100
                    text-sm font-medium transition"
       >
-        🔍 Búsqueda avanzada
+        🔍 Búsqueda Avanzada
       </button>
     </div>
   );
