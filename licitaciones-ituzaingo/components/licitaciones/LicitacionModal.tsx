@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import type { Licitacion } from "@/data/licitaciones";
 
 interface Props {
@@ -14,12 +15,18 @@ const estadoStyles: Record<string, string> = {
 };
 
 export default function LicitacionModal({ licitacion, onClose }: Props) {
+  const router = useRouter();
+
   if (!licitacion) return null;
+
+  const handleTramite = () => {
+    onClose();
+    router.push(`/licitaciones/${licitacion.id}/tramite`);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
       <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full overflow-hidden">
-
         {/* HEADER */}
         <div
           className="px-6 py-4 flex justify-between items-center"
@@ -41,10 +48,8 @@ export default function LicitacionModal({ licitacion, onClose }: Props) {
 
         {/* CONTENIDO */}
         <div className="px-6 py-6 space-y-6 text-sm text-gray-700">
-
           {/* DATOS PRINCIPALES */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
             <div className="bg-gray-50 rounded-lg p-4 border">
               <p className="text-xs text-gray-500 mb-1">Tipo de contratación</p>
               <p className="font-medium">{licitacion.tipo}</p>
@@ -70,7 +75,6 @@ export default function LicitacionModal({ licitacion, onClose }: Props) {
                 {new Date(licitacion.fechaApertura).toLocaleString("es-AR")}
               </p>
             </div>
-
           </div>
 
           {/* OBJETO */}
@@ -95,15 +99,13 @@ export default function LicitacionModal({ licitacion, onClose }: Props) {
           {/* INFO INSTITUCIONAL */}
           <div className="border-t pt-4 text-sm text-gray-600">
             Para iniciar el proceso de adquisición de pliegos es necesario
-            encontrarse inscripto en el Registro de Proveedores del Municipio
-            de Ituzaingó.
+            encontrarse inscripto en el Registro de Proveedores del Municipio de
+            Ituzaingó.
           </div>
-
         </div>
 
         {/* FOOTER */}
         <div className="px-6 py-4 border-t bg-gray-50 flex justify-end gap-3">
-
           <button
             onClick={onClose}
             className="px-4 py-2 rounded-md border
@@ -114,6 +116,7 @@ export default function LicitacionModal({ licitacion, onClose }: Props) {
           </button>
 
           <button
+            onClick={handleTramite}
             className="px-4 py-2 rounded-md
                        bg-[color:var(--itu-blue)]
                        hover:bg-[color:var(--itu-blue-dark)]
@@ -121,7 +124,6 @@ export default function LicitacionModal({ licitacion, onClose }: Props) {
           >
             Iniciar trámite
           </button>
-
         </div>
       </div>
     </div>
